@@ -1,5 +1,6 @@
 import express from "express";
 import { assignments } from "./data/assignments.js";
+import { comments } from "./data/comments.js";
 
 const app = express();
 const port = 4000;
@@ -8,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 let assignmentsDatabase = assignments;
+let commentsDatabase = comments;
 
 app.get("/assignments", function (req, res) {
   const limit = req.query.limit;
@@ -98,6 +100,34 @@ app.put("/assignments/:assignmentsId", function (req, res) {
   return res.json({
     message: "Assignment has been updated successfully",
     id: assignmentIdFromClient,
+    data: req.body,
+  });
+});
+
+app.get("/assignments/:assignmentsId/comments", function (req, res) {
+  let assignmentIdFromClient = Number(req.params.assignmentsId);
+  let commentsInAssignment = comments.filter(
+    (item) => item.assignmentId === assignmentIdFromClient
+  );
+
+  return res.json({
+    message: "Complete fetching comments",
+    data: commentsInAssignment,
+  });
+});
+
+app.post("/assignments/:assignmentsId/comments", function (req, res) {
+  let assignmentIdFromClient = Number(req.params.assignmentsId);
+
+  commentsDatabase.push({
+    id: commentsDatabase[commentsDatabase.length - 1].id + 1,
+    assignmentId: assignmentIdFromClient,
+    ...req.body,
+  });
+  return res.json({
+    message: "New comment has been created successfully",
+    id: commentsDatabase[commentsDatabase.length - 1].id + 1,
+    assignmentId: assignmentIdFromClient,
     data: req.body,
   });
 });
