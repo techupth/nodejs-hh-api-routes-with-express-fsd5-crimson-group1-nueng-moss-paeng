@@ -97,6 +97,8 @@ app.put("/assignments/:assignmentsId", function (req, res) {
 
   return res.json({
     message: "Assignment has been updated successfully",
+    id: assignmentIdFromClient,
+    data: req.body,
   });
 });
 
